@@ -45,6 +45,7 @@ export default {
       .then(({data}) => {
         this.upcoming = data;
         console.log(data);
+
       })
       .catch(err => console.log(err));
     },
