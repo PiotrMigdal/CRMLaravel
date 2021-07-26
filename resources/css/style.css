@@ -1,0 +1,11 @@
+@font-face {
+  font-family: 'MyriadProBold';
+  src: url("../font/MYRIADPRO-BOLD.OTF") format("otf");
+  font-style: normal;
+  font-weight: normal;
+}
+
+* {
+  font-family: MyriadProBold;
+}
+/*# sourceMappingURL=style.css.map */
