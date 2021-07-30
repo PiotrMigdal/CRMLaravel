@@ -17,7 +17,7 @@ class TodayTaskResource extends JsonResource
       return [
         'id' => $this->id,
         'title' => $this->title,
-        'completed' => $this->compeleted,
+        'completed' => $this->completed,
         'approver' => $this->approved,
         'taskId' => $this->taskId
       ];

@@ -17,7 +17,7 @@ class UpcomingResource extends JsonResource
       return [
         'id' => $this->id,
         'title' => $this->title,
-        'completed' => $this->compeleted,
+        'completed' => $this->completed,
         'approver' => $this->approved,
         'waiting' => $this->waiting,
         'taskId' => $this->taskId

@@ -2007,10 +2007,51 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      todayTask: [],
+      todayTasks: [],
       upcoming: [],
       newTask: ""
     };
@@ -2030,14 +2071,150 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (_ref) {
         var data = _ref.data;
         _this.upcoming = data;
-        console.log(data);
       })["catch"](function (err) {
         return console.log(err);
       });
     },
+    //Add upcoming task
+    addUpcomingTask: function addUpcomingTask(e) {
+      var _this2 = this;
+
+      e.preventDefault();
+
+      if (this.upcoming.length > 9) {
+        alert("Firstly complete upcomings");
+      } else {
+        var newTask = {
+          title: this.newTask,
+          waiting: true,
+          taskId: Math.random().toString(36).substring(7)
+        }; //Post Request
+
+        fetch("/api/upcoming", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify(newTask)
+        }).then(function () {
+          return _this2.upcoming.push(newTask);
+        }); //Clear or Reset new task
+
+        this.newTask = "";
+      }
+    },
+    //Delete Upcoming Task
+    delUpcoming: function delUpcoming(taskId) {
+      var _this3 = this;
+
+      if (confirm("Are you sure?")) {
+        fetch("/api/upcoming/".concat(taskId), {
+          method: 'delete'
+        }).then(function (res) {
+          return res.json();
+        }).then(function () {
+          _this3.upcoming = _this3.upcoming.filter(function (_ref2) {
+            var id = _ref2.taskId;
+            return id !== taskId;
+          });
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      }
+    },
+    //Check upcoming task
+    checkUpcoming: function checkUpcoming(taskId) {
+      var _this4 = this;
+
+      if (this.todayTasks.length > 9) {
+        alert("Sorry complete existing task");
+        windows.location.href = "/";
+      } else {
+        this.addDailyTask(taskId); //Deleted from this task from db
+
+        fetch("/api/upcoming/".concat(taskId), {
+          method: "delete"
+        }).then(function () {
+          return _this4.upcoming = _this4.upcoming.filter(function (_ref3) {
+            var id = _ref3.taskId;
+            return id !== taskId;
+          });
+        });
+      }
+    },
     //** Today Task Method */
     // Get today tasks
-    fetchTodayTasks: function fetchTodayTasks() {}
+    fetchTodayTasks: function fetchTodayTasks() {
+      var _this5 = this;
+
+      fetch('/api/dailytask').then(function (res) {
+        return res.json();
+      }).then(function (_ref4) {
+        var data = _ref4.data;
+        _this5.todayTasks = data;
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    //Add daily task
+    addDailyTask: function addDailyTask(taskId) {
+      var _this6 = this;
+
+      //Get task
+      var task = this.upcoming.filter(function (_ref5) {
+        var id = _ref5.taskId;
+        return id == taskId;
+      })[0];
+      console.log(task, 'task'); //Post Request
+
+      fetch('/api/dailytask', {
+        method: 'POST',
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify(task)
+      }).then(function () {
+        return _this6.todayTasks.unshift(task);
+      })["catch"](function (err) {
+        return console.log(err);
+      });
+    },
+    //Delete today task
+    delTask: function delTask(taskId) {
+      var _this7 = this;
+
+      if (confirm('Sure?')) {
+        fetch("/api/dailytask/".concat(taskId), {
+          method: 'delete'
+        }).then(function (res) {
+          return res.json();
+        }).then(function () {
+          return _this7.todayTasks = _this7.todayTasks.filter(function (_ref6) {
+            var id = _ref6.taskId;
+            return id !== taskId;
+          });
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      }
+    },
+    //Complete task
+    updateTodayTask: function updateTodayTask(taskId) {
+      var _this8 = this;
+
+      if (confirm('Complete?')) {
+        fetch("/api/dailytask/".concat(taskId), {
+          method: 'delete'
+        }).then(function () {}).then(function () {
+          _this8.todayTasks = _this8.todayTasks.filter(function (_ref7) {
+            var id = _ref7.taskId;
+            return id !== taskId;
+          });
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      }
+    }
   }
 });
 
@@ -37980,37 +38157,166 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { attrs: { id: "right" } }, [
+    _c("h1", [_vm._v("Development CRM")]),
+    _vm._v(" "),
+    _vm._m(0),
+    _vm._v(" "),
+    _c("p", [
+      _vm._v(
+        "\n    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident aut, officiis est consequuntur hic eveniet voluptates nisi odio mollitia optio. Porro unde, nostrum voluptatibus atque alias consequuntur dignissimos minima quas?\n  "
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "tasks" }, [
+      _c("h2", [_vm._v("Today's Task")]),
+      _vm._v(" "),
+      _vm._m(1),
+      _vm._v(" "),
+      _c(
+        "ul",
+        { staticClass: "tasks-list" },
+        _vm._l(_vm.todayTasks, function(task) {
+          return _c("li", { key: task.id }, [
+            _c("div", { staticClass: "info" }, [
+              _c("div", { staticClass: "left" }, [
+                _c("label", { staticClass: "myCheckbox" }, [
+                  _c("input", {
+                    attrs: { type: "checkbox", name: "test" },
+                    domProps: { checked: task.completed },
+                    on: {
+                      change: function($event) {
+                        return _vm.updateTodayTask(task.taskId)
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("span")
+                ]),
+                _vm._v(" "),
+                _c("h4", [_vm._v(_vm._s(task.title))])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "right" }, [
+                _c("img", { attrs: { src: "/images/edit.png", alt: "" } }),
+                _vm._v(" "),
+                _c("img", {
+                  attrs: { src: "/images/del.png", alt: "" },
+                  on: {
+                    click: function($event) {
+                      return _vm.delTask(task.taskId)
+                    }
+                  }
+                })
+              ])
+            ])
+          ])
+        }),
+        0
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "upcoming" }, [
+      _c("div", { staticClass: "add-task" }, [
+        _c("h2", [_vm._v("Upcoming")]),
+        _vm._v(" "),
+        _vm._m(2),
+        _vm._v(" "),
+        _c(
+          "form",
+          { attrs: { action: "" }, on: { submit: _vm.addUpcomingTask } },
+          [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.newTask,
+                  expression: "newTask"
+                }
+              ],
+              attrs: { type: "text" },
+              domProps: { value: _vm.newTask },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.newTask = $event.target.value
+                }
+              }
+            })
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "ul",
+          { staticClass: "tasks-list" },
+          _vm._l(_vm.upcoming, function(upcomingTask) {
+            return _c("li", { key: upcomingTask.id }, [
+              _c("div", { staticClass: "info" }, [
+                _c("div", { staticClass: "left" }, [
+                  _c("label", { staticClass: "myCheckbox" }, [
+                    _c("input", {
+                      attrs: { type: "checkbox", name: "test" },
+                      domProps: { checked: upcomingTask.completed },
+                      on: {
+                        change: function($event) {
+                          return _vm.checkUpcoming(upcomingTask.taskId)
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("span")
+                  ]),
+                  _vm._v(" "),
+                  _c("h4", [_vm._v(_vm._s(upcomingTask.title))])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "right" }, [
+                  _c("img", { attrs: { src: "/images/edit.png", alt: "" } }),
+                  _vm._v(" "),
+                  _c("img", {
+                    attrs: { src: "/images/del.png", alt: "" },
+                    on: {
+                      click: function($event) {
+                        return _vm.delUpcoming(upcomingTask.taskId)
+                      }
+                    }
+                  })
+                ])
+              ])
+            ])
+          }),
+          0
+        )
+      ])
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { attrs: { id: "right" } }, [
-      _c("h1", [_vm._v("Development CRM")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "horizontal" }, [
-        _c("img", { attrs: { src: "/images/horizontal.png", alt: "" } })
-      ]),
-      _vm._v(" "),
-      _c("p", [
-        _vm._v(
-          "\n    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident aut, officiis est consequuntur hic eveniet voluptates nisi odio mollitia optio. Porro unde, nostrum voluptatibus atque alias consequuntur dignissimos minima quas?\n  "
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "task" }, [
-        _c("div", { staticClass: "add-task" }, [
-          _c("h2", [_vm._v("Today's Task")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "add-action" }, [
-            _c("img", { attrs: { src: "/images/add.png", alt: "" } })
-          ]),
-          _vm._v(" "),
-          _c("ul", { staticClass: "task-list" })
-        ])
-      ])
+    return _c("div", { staticClass: "horizontal" }, [
+      _c("img", { attrs: { src: "/images/horizontal.png", alt: "" } })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "add-action" }, [
+      _c("img", { attrs: { src: "/images/add.png", alt: "" } })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "add-action" }, [
+      _c("img", { attrs: { src: "/images/add.png", alt: "" } })
     ])
   }
 ]
